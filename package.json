@@ -18,7 +18,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "source env/bin/activate; concurrently -k \"python server/server.py\" \"react-scripts start\";",
+    "start": "source env/bin/activate; concurrently -c \"auto\" -k --names \"SERVER,CLIENT\" \"python server/server.py\" \"react-scripts start\";",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
