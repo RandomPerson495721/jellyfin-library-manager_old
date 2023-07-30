@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+</head>
+<body>
+  <script>
+    const socket = new WebSocket('ws://127.0.0.1:5001/echo');
+
+    socket.onopen = () => {
+      console.log('WebSocket connection opened.');
+      socket.send('Hello, WebSocket server!');
+    };
+
+    socket.onmessage = (event) => {
+      console.log('Received message:', event.data);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed.');
+    };
+  </script>
+</body>
+</html>
+
