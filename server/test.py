@@ -1,22 +1,21 @@
 from threading import Thread
-import jobHandler
-from flask import Flask , render_template_string
-from flask_socketio import SocketIO
 import asyncio
-import websockets
 
 
-async def handler(websocket):
-    while True:
-        message = await websocket.recv()
-        print(message)
-        await websocket.send(message)
+class testclass:
+    ib = 0
 
+    def test_async_func(self):
+        def test_async_func2(self2):
+            for i in range(0, 100):
+                self2.ib += 1
+                print("This is the second thread %s" % self2.ib)
 
-async def main():
-    async with websockets.serve(handler, "", 8001):
-        await asyncio.Future()  # run forever
-t1 = Thread(jobHandler.jobHandler.start_upload())
+        return Thread(target=test_async_func2, args=(self,))
 
-if __name__ == "__main__":
-    asyncio.run(main())
+obj = testclass()
+
+obj.test_async_func().start()
+for i in range(0, 100):
+    obj.ib += 1
+    print("And this is the first thread %s" % obj.ib)

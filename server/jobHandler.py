@@ -38,7 +38,7 @@ class jobHandler:
                 #TODO: Implement error tracking in the state of the class (If this works) ^
                 pass
 
-        return threading.Thread(target=__start_upload__(self))
+        return threading.Thread(target=__start_upload__, args=(self,))
 
 
     def get_progress(self):
