@@ -20,11 +20,11 @@ class jobHandler:
         self.file = file
 
     def start_upload(self):
-        def __start_upload__(__self__):
+        def _start_upload(_self):
             try:
-                with open(__self__.filename, "wb") as output:
+                with open(_self.filename, "wb") as output:
                     while True:
-                        buffer = __self__.file.read(__self__.chunksize)
+                        buffer = _self.file.read(_self.chunksize)
                         if len(buffer) > 0:
                             output.write(buffer)
                         else:
@@ -38,7 +38,7 @@ class jobHandler:
                 #TODO: Implement error tracking in the state of the class (If this works) ^
                 pass
 
-        return threading.Thread(target=__start_upload__, args=(self,))
+        return threading.Thread(target=_start_upload, args=(self,)).start()
 
 
     def get_progress(self):

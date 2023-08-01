@@ -11,11 +11,12 @@ class testclass:
                 self2.ib += 1
                 print("This is the second thread %s" % self2.ib)
 
-        return Thread(target=test_async_func2, args=(self,))
+        return Thread(target=test_async_func2, args=(self,)).start()
+
 
 obj = testclass()
 
-obj.test_async_func().start()
+obj.test_async_func()
 for i in range(0, 100):
     obj.ib += 1
     print("And this is the first thread %s" % obj.ib)
