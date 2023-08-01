@@ -20,19 +20,26 @@ class jobHandler:
         self.file = file
 
     def start_upload(self):
-        try:
-            with open(self.filename, "wb") as output:
-                while True:
-                    buffer = self.file.read(self.chunksize)
-                    if len(buffer) > 0:
-                        output.write(buffer)
-                    else:
-                        break
-            return make_response("Upload Successful!", 200)
-        except IOError:
-            return make_response("Error occurred when writing file!", 500)
-        except Exception:
-            return make_response("Unknown server error occurred!", 500)
+        def __start_upload__(__self__):
+            try:
+                with open(__self__.filename, "wb") as output:
+                    while True:
+                        buffer = __self__.file.read(__self__.chunksize)
+                        if len(buffer) > 0:
+                            output.write(buffer)
+                        else:
+                            break
+                #return make_response("Upload Successful", 200)
+            except IOError:
+                #return make_response("Error occurred when writing file", 500)
+                pass
+            except Exception:
+                #return make_response("Unknown server error occurred", 500)
+                #TODO: Implement error tracking in the state of the class (If this works) ^
+                pass
+
+        return threading.Thread(target=__start_upload__(self))
+
 
     def get_progress(self):
         filesize: int
