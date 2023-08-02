@@ -39,4 +39,4 @@ class jobsManager:
                         else:
                             self.remove_job(job)
 
-        return threading.Thread(target=_start).start()
+        threading.Thread(target=_start).start()
