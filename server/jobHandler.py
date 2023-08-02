@@ -10,7 +10,7 @@ class jobHandler:
     filename: str
     filesize: int
     file: request.stream
-    upload_thread: threading.Thread
+    processing_thread: threading.Thread
 
     # TODO: Implement metadata
     def __init__(self, filename: str, filesize: int, file: request.stream, chunksize: int = 4096):
@@ -39,8 +39,8 @@ class jobHandler:
                 # TODO: Implement error tracking in the state of the class (If this works) ^
                 pass
 
-        self.upload_thread = threading.Thread(target=_start_upload, args=(self,))
-        return self.upload_thread.start()
+        self.processing_thread = threading.Thread(target=_start_upload, args=(self,))
+        return self.processing_thread.start()
 
     def get_progress(self):
         filesize: int
@@ -58,4 +58,4 @@ class jobHandler:
             status_code)
 
     def is_alive(self):
-        return self.upload_thread.is_alive()
+        return self.processing_thread.is_alive()

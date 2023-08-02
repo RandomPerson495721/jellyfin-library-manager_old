@@ -3,11 +3,11 @@ import os
 import traceback
 import threading
 from flask import Flask, jsonify, request, make_response
-import jobHandler
+from jobHandler import jobHandler
 
 
 class jobsManager:
-    jobs: dict[int, jobHandler.jobHandler]
+    jobs: dict[int, jobHandler]
     max_concurrent_transcodes: int
 
     def __init__(self, max_concurrent_transcodes: int = 4):
@@ -15,9 +15,11 @@ class jobsManager:
         self.jobs = {}
         self.max_concurrent_transcodes = max_concurrent_transcodes
 
-    def add_job(self, job: jobHandler.jobHandler):
+    def add_job(self, job: jobHandler):
         self.lock.acquire()
-        index = self.jobs
+        index = 0
+        while index in self.jobs:
+            index += 1
         self.jobs[index] = job
         self.lock.release()
         return index
@@ -26,12 +28,6 @@ class jobsManager:
         self.lock.acquire()
         self.jobs.pop(job)
         self.lock.release()
-
-    def get_job(self, job: int):
-        self.lock.acquire()
-        job = self.jobs[job]
-        self.lock.release()
-        return job
 
     def start(self):
         def _start():
@@ -42,6 +38,5 @@ class jobsManager:
                             pass
                         else:
                             self.remove_job(job)
-
 
         return threading.Thread(target=_start).start()
