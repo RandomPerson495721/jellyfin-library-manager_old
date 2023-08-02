@@ -10,6 +10,7 @@ class jobHandler:
     filename: str
     filesize: int
     file: request.stream
+    upload_thread: threading.Thread
 
     # TODO: Implement metadata
     def __init__(self, filename: str, filesize: int, file: request.stream, chunksize: int = 4096):
@@ -29,17 +30,17 @@ class jobHandler:
                             output.write(buffer)
                         else:
                             break
-                #return make_response("Upload Successful", 200)
+                # return make_response("Upload Successful", 200)
             except IOError:
-                #return make_response("Error occurred when writing file", 500)
+                # return make_response("Error occurred when writing file", 500)
                 pass
             except Exception:
-                #return make_response("Unknown server error occurred", 500)
-                #TODO: Implement error tracking in the state of the class (If this works) ^
+                # return make_response("Unknown server error occurred", 500)
+                # TODO: Implement error tracking in the state of the class (If this works) ^
                 pass
 
-        return threading.Thread(target=_start_upload, args=(self,)).start()
-
+        self.upload_thread = threading.Thread(target=_start_upload, args=(self,))
+        return self.upload_thread.start()
 
     def get_progress(self):
         filesize: int
@@ -55,3 +56,6 @@ class jobHandler:
             'uploaded_file_size': filesize,
             'other_progress_indicators': 'need_to_be_implemented'}),
             status_code)
+
+    def is_alive(self):
+        return self.upload_thread.is_alive()

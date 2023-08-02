@@ -17,7 +17,7 @@ class jobsManager:
 
     def add_job(self, job: jobHandler.jobHandler):
         self.lock.acquire()
-        index = len(self.jobs)
+        index = self.jobs
         self.jobs[index] = job
         self.lock.release()
         return index
@@ -42,6 +42,6 @@ class jobsManager:
                             pass
                         else:
                             self.remove_job(job)
-                else:
-                    pass
+
+
         return threading.Thread(target=_start).start()
