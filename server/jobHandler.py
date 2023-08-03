@@ -2,34 +2,40 @@ import configparser
 import os
 import traceback
 import threading
-from flask import Flask, jsonify, request, make_response
+from types import LambdaType
+
+from flask import Flask, jsonify, request, make_response, stream_with_context
+import subprocess
 
 
 class jobHandler:
     chunksize: int
     filename: str
     filesize: int
-    file: request.stream
+    ffmpeg_path: str
     processing_thread: threading.Thread
-    # The tuple is for the status of the job, the first value is the status,
-    # the second is if the job failed unexpectedly
-    processing_checklist: dict[str, tuple] = {"uploading": tuple[False, False], "transcoding": tuple[False, False], "finished": tuple[False, False]}
+    # The tuple is (is_finished, is_error)
+    processing_checklist: dict[str, tuple] = {"uploading": tuple[False, False],
+                                              "transcoding": tuple[False, False],
+                                              "finished": tuple[False, False]}
 
     # TODO: Implement metadata
-    def __init__(self, filename: str, filesize: int, file: request.stream, chunksize: int = 4096):
+    def __init__(self, filesize: int, filename: str, config: configparser.ConfigParser, chunksize: int = 4096):
         self.lock = threading.Lock()
-        self.filename = filename
+        self.filename = ''.join([config.get('REQUIRED', 'temp_file_path'), filename])
         self.chunksize = chunksize
         self.filesize = filesize
-        self.file = file
+        self.ffmpeg_path = config.get('REQUIRED', 'ffmpeg_path')
+        #self.file = file
 
-    def start_upload(self):
-        def _start_upload(_self):
+    def start_upload(self, file):
+        def _start_upload(_self, _file):
             try:
                 with open(_self.filename, "wb") as output:
                     self.processing_checklist["uploading"] = True, False
                     while True:
-                        buffer = _self.file.read(_self.chunksize)
+                        buffer = _file.read(_self.chunksize)
+                        print(buffer)
                         if len(buffer) > 0:
                             output.write(buffer)
                         else:
@@ -46,7 +52,7 @@ class jobHandler:
             finally:
                 self.processing_checklist["uploading"] = False, False
 
-        self.processing_thread = threading.Thread(target=_start_upload, args=(self,))
+        self.processing_thread = threading.Thread(target=_start_upload, args=(self, file))
         self.processing_thread.start()
 
     def get_progress(self):
